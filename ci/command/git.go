@@ -24,6 +24,7 @@ import (
 	"time"
 
 	"gopkg.in/src-d/go-git.v4"
+	"gopkg.in/src-d/go-git.v4/config"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
@@ -33,6 +34,11 @@ func PushChange() error {
 	gitToken := os.Getenv("GIT_TOKEN")
 	if gitToken == "" {
 		return errors.New("please specify the GIT_TOKEN environment variable")
+	}
+
+	tagVersion := os.Getenv("GIT_TAG_VERSION")
+	if tagVersion == "" {
+		return errors.New("please specify the TAG_VERSION environment variable")
 	}
 
 	fmt.Println("Committing...")
@@ -69,7 +75,15 @@ func PushChange() error {
 
 	fmt.Println("Commit done")
 
+	fmt.Println("Tagging...", tagVersion)
+	_, err = repo.Tag(tagVersion)
+	if err != nil {
+		return err
+	}
+	fmt.Println("tagged")
+
 	fmt.Println("Pushing...")
+	rs := config.RefSpec("refs/tags/*:refs/tags/*")
 	err = repo.Push(&git.PushOptions{
 		RemoteName: "origin",
 		Auth: &http.BasicAuth{
@@ -77,10 +91,9 @@ func PushChange() error {
 			Username: "MisterFancyPants",
 			Password: gitToken,
 		},
+		RefSpecs: []config.RefSpec{rs},
 	})
-	if err != nil {
-		return err
-	}
+
 	fmt.Println("Push done")
 
 	return nil

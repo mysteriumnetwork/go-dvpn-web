@@ -2,11 +2,11 @@ dist: xenial
 language: go
 go: ["1.12"]
 env:
-  - API_TRIGGER=false
+  - GIT_TAG_VERSION=
 
 stages:
   - name: deploy
-    if: env(API_TRIGGER) = true
+    if: env(GIT_TAG_VERSION) is not blank
 
 jobs:
   include:
