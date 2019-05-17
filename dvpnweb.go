@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2019 The "MysteriumNetwork/node" Authors.
+ * Copyright (C) 2019 The "MysteriumNetwork/go-dvpn-web" Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,4 +17,9 @@
 
 package dvpnweb
 
+import "net/http"
+
 //go:generate go run assets_generate.go
+
+// Data is the file system we want to bake into the binary
+var Data http.FileSystem = http.Dir("./assets")
