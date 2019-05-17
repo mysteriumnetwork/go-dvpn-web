@@ -20,6 +20,10 @@
 package main
 
 import (
+	"errors"
+	"fmt"
+	"os"
+
 	"github.com/magefile/mage/mg"
 	"github.com/mysteriumnetwork/go-dvpn-web/ci/command"
 )
@@ -38,6 +42,41 @@ func Generate() error {
 
 // Commit commits and pushes the changes to the assets_vfsdata.go
 func Commit() error {
-	mg.Deps(command.PushChange)
+	gitToken := os.Getenv("GIT_TOKEN")
+	if gitToken == "" {
+		return errors.New("please specify the GIT_TOKEN environment variable")
+	}
+
+	tagVersion := os.Getenv("GIT_TAG_VERSION")
+	if tagVersion == "" {
+		return errors.New("please specify the TAG_VERSION environment variable")
+	}
+
+	git := command.NewCommiter(gitToken)
+	err := git.Checkout("master")
+	if err != nil {
+		return err
+	}
+
+	defer command.Cleanup()
+	mg.SerialDeps(
+		command.DownloadLatestAssets,
+		command.ExtractAssets,
+		command.FixDirectory,
+		command.Generate,
+	)
+
+	hash, err := git.Commit(fmt.Sprintf("updating assets_vfsdata.go for %v", tagVersion), "assets_vfsdata.go")
+	if err != nil {
+		return err
+	}
+	err = git.Tag(tagVersion, hash)
+	if err != nil {
+		return err
+	}
+	err = git.Push()
+	if err != nil {
+		return err
+	}
 	return nil
 }

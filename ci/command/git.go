@@ -18,9 +18,7 @@
 package command
 
 import (
-	"errors"
 	"fmt"
-	"os"
 	"time"
 
 	"gopkg.in/src-d/go-git.v4"
@@ -30,34 +28,32 @@ import (
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
 
-// PushChange pushes the change to github
-func PushChange() error {
-	gitToken := os.Getenv("GIT_TOKEN")
-	if gitToken == "" {
-		return errors.New("please specify the GIT_TOKEN environment variable")
-	}
+type GitCommiter struct {
+	repo  *git.Repository
+	token string
+}
 
-	tagVersion := os.Getenv("GIT_TAG_VERSION")
-	if tagVersion == "" {
-		return errors.New("please specify the TAG_VERSION environment variable")
+func NewCommiter(apiToken string) *GitCommiter {
+	return &GitCommiter{
+		token: apiToken,
 	}
+}
 
-	fmt.Println("Committing...")
-	repo, err := git.PlainOpen("./")
+func (gc *GitCommiter) Checkout(branchName string) error {
+	var err error
+	gc.repo, err = git.PlainOpen("./")
 	if err != nil {
 		return err
 	}
 	fmt.Println("repo opened")
-	w, err := repo.Worktree()
+	w, err := gc.repo.Worktree()
 	if err != nil {
 		return err
 	}
 	fmt.Println("worktree fetched")
-
 	fmt.Println("checking out master")
-	branch := "refs/heads/master"
+	branch := fmt.Sprintf("refs/heads/%v", branchName)
 	b := plumbing.ReferenceName(branch)
-
 	err = w.Checkout(&git.CheckoutOptions{
 		Branch: b,
 		Create: false,
@@ -67,16 +63,24 @@ func PushChange() error {
 		return err
 	}
 	fmt.Println("master checked out")
+	return nil
+}
 
+func (gc *GitCommiter) Commit(message string, files ...string) (plumbing.Hash, error) {
+	w, err := gc.repo.Worktree()
 	fmt.Println("adding changes")
-	_, err = w.Add("assets_vfsdata.go")
-	if err != nil {
-		return err
+	for _, file := range files {
+		fmt.Printf("adding %q\n", file)
+		_, err = w.Add(file)
+		if err != nil {
+			return [20]byte{}, err
+		}
+		fmt.Printf("%q added!\n", file)
 	}
 	fmt.Println("changes added")
 
 	fmt.Println("performing commit")
-	commitHash, err := w.Commit("Updating assets_vfsdata.go", &git.CommitOptions{
+	commitHash, err := w.Commit(message, &git.CommitOptions{
 		Author: &object.Signature{
 			Name:  "Mister CI tool",
 			Email: "dev@mysterium.network",
@@ -84,33 +88,40 @@ func PushChange() error {
 		},
 	})
 	if err != nil {
-		return err
+		return commitHash, err
 	}
 
 	fmt.Println("Commit done")
+	return commitHash, nil
+}
 
+func (gc *GitCommiter) Tag(tagVersion string, hash plumbing.Hash) error {
 	fmt.Println("Tagging...", tagVersion)
 	n := plumbing.ReferenceName("refs/tags/" + tagVersion)
-	t := plumbing.NewHashReference(n, commitHash)
-	err = repo.Storer.SetReference(t)
+	t := plumbing.NewHashReference(n, hash)
+	err := gc.repo.Storer.SetReference(t)
 	if err != nil {
 		return err
 	}
 	fmt.Println("tagged")
+	return nil
+}
 
+func (gc *GitCommiter) Push() error {
 	fmt.Println("Pushing...")
 	rs := config.RefSpec("refs/tags/*:refs/tags/*")
-	err = repo.Push(&git.PushOptions{
+	err := gc.repo.Push(&git.PushOptions{
 		RemoteName: "origin",
 		Auth: &http.BasicAuth{
 			// this can be anything but not an empty string
 			Username: "MisterFancyPants",
-			Password: gitToken,
+			Password: gc.token,
 		},
 		RefSpecs: []config.RefSpec{rs},
 	})
-
+	if err != nil {
+		return err
+	}
 	fmt.Println("Push done")
-
 	return nil
 }
