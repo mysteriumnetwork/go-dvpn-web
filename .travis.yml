@@ -11,9 +11,8 @@ stages:
 jobs:
   include:
     - stage: deploy
-      before_istall:
-        - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
       install:
+        - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
         - dep ensure -v
       name: "generate and commit"
       script:
