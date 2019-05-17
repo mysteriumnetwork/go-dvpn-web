@@ -25,6 +25,7 @@ import (
 
 	"gopkg.in/src-d/go-git.v4"
 	"gopkg.in/src-d/go-git.v4/config"
+	"gopkg.in/src-d/go-git.v4/plumbing"
 	"gopkg.in/src-d/go-git.v4/plumbing/object"
 	"gopkg.in/src-d/go-git.v4/plumbing/transport/http"
 )
@@ -62,7 +63,7 @@ func PushChange() error {
 	fmt.Println("changes added")
 
 	fmt.Println("performing commit")
-	_, err = w.Commit("Updating assets_vfsdata.go", &git.CommitOptions{
+	commitHash, err := w.Commit("Updating assets_vfsdata.go", &git.CommitOptions{
 		Author: &object.Signature{
 			Name:  "Mister CI tool",
 			Email: "dev@mysterium.network",
@@ -76,7 +77,9 @@ func PushChange() error {
 	fmt.Println("Commit done")
 
 	fmt.Println("Tagging...", tagVersion)
-	_, err = repo.Tag(tagVersion)
+	n := plumbing.ReferenceName("refs/tags/" + tagVersion)
+	t := plumbing.NewHashReference(n, commitHash)
+	err = repo.Storer.SetReference(t)
 	if err != nil {
 		return err
 	}
