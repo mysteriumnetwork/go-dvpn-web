@@ -1,7 +1,7 @@
 // +build ignore
 
 /*
- * Copyright (C) 2019 The "MysteriumNetwork/node" Authors.
+ * Copyright (C) 2019 The "MysteriumNetwork/go-dvpn-web" Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,7 +27,7 @@ import (
 )
 
 func main() {
-	err := vfsgen.Generate(dvpnweb.Assets, vfsgen.Options{
+	err := vfsgen.Generate(dvpnweb.Data, vfsgen.Options{
 		PackageName:  "dvpnweb",
 		VariableName: "Assets",
 	})
