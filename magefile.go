@@ -35,3 +35,8 @@ func Generate() error {
 	)
 	return nil
 }
+
+func Commit() error {
+	mg.Deps(command.PushChange)
+	return nil
+}
