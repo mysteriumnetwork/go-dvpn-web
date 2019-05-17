@@ -37,23 +37,27 @@ const assetDir = "assets"
 
 // DownloadLatestAssets fetches the latest assets from github
 func DownloadLatestAssets() error {
+	fmt.Println("getting latest release")
 	res, err := http.Get("https://api.github.com/repos/mysteriumnetwork/dvpn-web/releases/latest")
 	if err != nil {
 		return err
 	}
 
+	fmt.Println("reading response body")
 	defer res.Body.Close()
 	bytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
 
+	fmt.Println("unmarshaling response body")
 	rr := ReleasesResponse{}
 	err = json.Unmarshal(bytes, &rr)
 	if err != nil {
 		return err
 	}
 
+	fmt.Println("looking for assets")
 	if len(rr.Assets) == 0 {
 		return errors.New("no assets in latest release")
 	}
