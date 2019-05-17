@@ -35,3 +35,9 @@ func Generate() error {
 	)
 	return nil
 }
+
+// Commit commits and pushes the changes to the assets_vfsdata.go
+func Commit() error {
+	mg.Deps(command.PushChange)
+	return nil
+}
