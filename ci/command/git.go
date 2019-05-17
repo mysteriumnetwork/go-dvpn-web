@@ -48,12 +48,25 @@ func PushChange() error {
 		return err
 	}
 	fmt.Println("repo opened")
-
 	w, err := repo.Worktree()
 	if err != nil {
 		return err
 	}
 	fmt.Println("worktree fetched")
+
+	fmt.Println("checking out master")
+	branch := "refs/heads/master"
+	b := plumbing.ReferenceName(branch)
+
+	err = w.Checkout(&git.CheckoutOptions{
+		Branch: b,
+		Create: false,
+		Force:  false,
+	})
+	if err != nil {
+		return err
+	}
+	fmt.Println("master checked out")
 
 	fmt.Println("adding changes")
 	_, err = w.Add("assets_vfsdata.go")
