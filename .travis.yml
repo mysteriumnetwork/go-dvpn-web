@@ -1,0 +1,21 @@
+dist: xenial
+language: go
+go: ["1.12"]
+env:
+  - API_TRIGGER=false
+
+stages:
+  - name: deploy
+    if: env(API_TRIGGER) = true
+
+jobs:
+  include:
+    - stage: deploy
+      before_istall:
+        - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
+      install:
+        - dep ensure -v
+      name: "generate and commit"
+      script:
+        - go run ci/main.go generate
+        - go run ci/main.go commit
