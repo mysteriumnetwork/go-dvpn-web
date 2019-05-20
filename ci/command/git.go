@@ -53,10 +53,7 @@ func (gc *GitCommiter) Checkout(branchName string) error {
 	}
 	fmt.Println("worktree fetched")
 	fmt.Println("checking out master")
-	branch := fmt.Sprintf("refs/remotes/origin/%v", branchName)
-	b := plumbing.ReferenceName(branch)
 	err = w.Checkout(&git.CheckoutOptions{
-		Branch: b,
 		Create: false,
 		Force:  false,
 	})
