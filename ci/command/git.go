@@ -29,9 +29,10 @@ import (
 )
 
 type GitCommiter struct {
-	repo  *git.Repository
-	w     *git.Worktree
-	token string
+	repo   *git.Repository
+	w      *git.Worktree
+	branch string
+	token  string
 }
 
 func NewCommiter(apiToken string) *GitCommiter {
@@ -61,6 +62,7 @@ func (gc *GitCommiter) Checkout(branchName string) error {
 		return err
 	}
 	gc.w = w
+	gc.branch = branchName
 	fmt.Println("master checked out")
 	return nil
 }
@@ -107,7 +109,7 @@ func (gc *GitCommiter) Tag(tagVersion string, hash plumbing.Hash) error {
 func (gc *GitCommiter) Push() error {
 	fmt.Println("Pushing...")
 	rs := config.RefSpec("refs/tags/*:refs/tags/*")
-	rsm := config.RefSpec("refs/heads/master:refs/heads/master")
+	rsm := config.RefSpec(fmt.Sprintf("refs/heads/%v:refs/heads/%v", gc.branch, gc.branch))
 	err := gc.repo.Push(&git.PushOptions{
 		RemoteName: "origin",
 		Auth: &http.BasicAuth{
