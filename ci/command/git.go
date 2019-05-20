@@ -110,6 +110,7 @@ func (gc *GitCommiter) Tag(tagVersion string, hash plumbing.Hash) error {
 func (gc *GitCommiter) Push() error {
 	fmt.Println("Pushing...")
 	rs := config.RefSpec("refs/tags/*:refs/tags/*")
+	rsm := config.RefSpec("refs/remotes/origin/master:refs/remotes/origin/master")
 	err := gc.repo.Push(&git.PushOptions{
 		RemoteName: "origin",
 		Auth: &http.BasicAuth{
@@ -117,7 +118,7 @@ func (gc *GitCommiter) Push() error {
 			Username: "MisterFancyPants",
 			Password: gc.token,
 		},
-		RefSpecs: []config.RefSpec{rs},
+		RefSpecs: []config.RefSpec{rs, rsm},
 	})
 	if err != nil {
 		return err
