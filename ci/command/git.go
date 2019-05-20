@@ -30,6 +30,7 @@ import (
 
 type GitCommiter struct {
 	repo  *git.Repository
+	w     *git.Worktree
 	token string
 }
 
@@ -52,7 +53,7 @@ func (gc *GitCommiter) Checkout(branchName string) error {
 	}
 	fmt.Println("worktree fetched")
 	fmt.Println("checking out master")
-	branch := fmt.Sprintf("refs/heads/%v", branchName)
+	branch := fmt.Sprintf("refs/remotes/origin/%v", branchName)
 	b := plumbing.ReferenceName(branch)
 	err = w.Checkout(&git.CheckoutOptions{
 		Branch: b,
@@ -62,16 +63,16 @@ func (gc *GitCommiter) Checkout(branchName string) error {
 	if err != nil {
 		return err
 	}
+	gc.w = w
 	fmt.Println("master checked out")
 	return nil
 }
 
 func (gc *GitCommiter) Commit(message string, files ...string) (plumbing.Hash, error) {
-	w, err := gc.repo.Worktree()
 	fmt.Println("adding changes")
 	for _, file := range files {
 		fmt.Printf("adding %q\n", file)
-		_, err = w.Add(file)
+		_, err := gc.w.Add(file)
 		if err != nil {
 			return [20]byte{}, err
 		}
@@ -80,7 +81,7 @@ func (gc *GitCommiter) Commit(message string, files ...string) (plumbing.Hash, e
 	fmt.Println("changes added")
 
 	fmt.Println("performing commit")
-	commitHash, err := w.Commit(message, &git.CommitOptions{
+	commitHash, err := gc.w.Commit(message, &git.CommitOptions{
 		Author: &object.Signature{
 			Name:  "Mister CI tool",
 			Email: "dev@mysterium.network",
@@ -90,7 +91,6 @@ func (gc *GitCommiter) Commit(message string, files ...string) (plumbing.Hash, e
 	if err != nil {
 		return commitHash, err
 	}
-
 	fmt.Println("Commit done")
 	return commitHash, nil
 }
