@@ -40,8 +40,8 @@ func Generate() error {
 	return nil
 }
 
-// Commit commits and pushes the changes to the assets_vfsdata.go
-func Commit() error {
+// CI generates, commits and pushes the changes to the assets_vfsdata.go
+func CI() error {
 	gitToken := os.Getenv("GIT_TOKEN")
 	if gitToken == "" {
 		return errors.New("please specify the GIT_TOKEN environment variable")

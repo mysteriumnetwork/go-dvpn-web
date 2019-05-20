@@ -16,4 +16,4 @@ jobs:
         - dep ensure -v
       name: "generate and commit"
       script:
-        - go run ci/main.go generate && go run ci/main.go commit
+        - go run ci/main.go ci

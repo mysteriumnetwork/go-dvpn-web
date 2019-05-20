@@ -56,7 +56,7 @@ func (gc *GitCommiter) Checkout(branchName string) error {
 	fmt.Println("checking out master")
 	err = w.Checkout(&git.CheckoutOptions{
 		Create: false,
-		Force:  false,
+		Force:  true,
 	})
 	if err != nil {
 		return err
