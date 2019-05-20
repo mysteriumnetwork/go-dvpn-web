@@ -38,19 +38,29 @@ const assetDir = "assets"
 // DownloadLatestAssets fetches the latest assets from github
 func DownloadLatestAssets() error {
 	fmt.Println("getting latest release")
-	res, err := http.Get("https://api.github.com/repos/mysteriumnetwork/dvpn-web/releases/latest")
+
+	client := &http.Client{
+		Timeout: time.Minute,
+	}
+	req, err := http.NewRequest("GET", "https://api.github.com/repos/mysteriumnetwork/dvpn-web/releases/latest", nil)
 	if err != nil {
 		return err
 	}
+
+	if os.Getenv("GIT_TOKEN") != "" {
+		fmt.Println("git token present, will make authorized request")
+		req.SetBasicAuth("doesntmatter", os.Getenv("GIT_TOKEN"))
+	}
+
+	res, err := client.Do(req)
 	fmt.Println("response status", res.StatusCode)
+
 	fmt.Println("reading response body")
 	defer res.Body.Close()
 	bytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
-
-	fmt.Println("RESPONSE:", string(bytes))
 
 	fmt.Println("unmarshaling response body")
 	rr := ReleasesResponse{}
