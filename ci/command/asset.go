@@ -42,13 +42,15 @@ func DownloadLatestAssets() error {
 	if err != nil {
 		return err
 	}
-
+	fmt.Println("response status", res.StatusCode)
 	fmt.Println("reading response body")
 	defer res.Body.Close()
 	bytes, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return err
 	}
+
+	fmt.Println("RESPONSE:", string(bytes))
 
 	fmt.Println("unmarshaling response body")
 	rr := ReleasesResponse{}
