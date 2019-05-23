@@ -53,6 +53,7 @@ func (gc *GitCommiter) Checkout(branchName string) error {
 		return err
 	}
 	fmt.Println("worktree fetched")
+
 	fmt.Println("checking out master")
 	err = w.Checkout(&git.CheckoutOptions{
 		Create: false,
