@@ -37,10 +37,10 @@
   branch = "master"
   name = "github.com/shurcooL/vfsgen"
 
-[[constraint]]
-  name = "gopkg.in/src-d/go-git.v4"
-  version = "=4.11.0"
-
 [prune]
   go-tests = true
   unused-packages = true
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/mysteriumnetwork/go-ci"

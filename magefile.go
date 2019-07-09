@@ -25,6 +25,7 @@ import (
 	"os"
 
 	"github.com/magefile/mage/mg"
+	mgit "github.com/mysteriumnetwork/go-ci/git"
 	"github.com/mysteriumnetwork/go-dvpn-web/ci/command"
 )
 
@@ -52,8 +53,8 @@ func CI() error {
 		return errors.New("please specify the TAG_VERSION environment variable")
 	}
 
-	git := command.NewCommiter(gitToken)
-	err := git.Checkout("master")
+	git := mgit.NewCommiter(gitToken)
+	err := git.Checkout(&mgit.CheckoutOptions{Force: true})
 	if err != nil {
 		return err
 	}
@@ -74,7 +75,7 @@ func CI() error {
 	if err != nil {
 		return err
 	}
-	err = git.Push()
+	err = git.Push(&mgit.PushOptions{Remote: "origin"})
 	if err != nil {
 		return err
 	}

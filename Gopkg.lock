@@ -86,6 +86,14 @@
   version = "v1.1.0"
 
 [[projects]]
+  branch = "master"
+  digest = "1:afd182c0d676c2d00fe096cdfa8bc6b667c1c90fffdd5fbcdbfbfb8f79b18732"
+  name = "github.com/mysteriumnetwork/go-ci"
+  packages = ["git"]
+  pruneopts = "UT"
+  revision = "24b985f1e13ec3512cb3d3b071c21baf0c9e244d"
+
+[[projects]]
   digest = "1:b93a939355dc613ca1c23bf39f6d4c207da431a31dd8af001cc334ad24cab9d3"
   name = "github.com/nwaples/rardecode"
   packages = ["."]
@@ -205,9 +213,13 @@
 
 [[projects]]
   branch = "master"
-  digest = "1:76ee51c3f468493aff39dbacc401e8831fbb765104cbf613b89bef01cf4bad70"
+  digest = "1:c3e095ce762c6eb934a2c9d117387970076a0213c009b0ad8e6e9f80fef7475a"
   name = "golang.org/x/net"
-  packages = ["context"]
+  packages = [
+    "context",
+    "internal/socks",
+    "proxy",
+  ]
   pruneopts = "UT"
   revision = "f3200d17e092c607f615320ecaad13d87ad9a2b3"
 
@@ -238,7 +250,7 @@
   version = "v4.3.0"
 
 [[projects]]
-  digest = "1:7fcf8681ff737e3fa6b387448717283c2053058c5d7344c22a9a025b0dc5be4a"
+  digest = "1:ca7d1685b495a8037bd2532eb84231b7fc5649de546cf878e1a32f44a3d5234f"
   name = "gopkg.in/src-d/go-git.v4"
   packages = [
     ".",
@@ -284,8 +296,8 @@
     "utils/merkletrie/noder",
   ]
   pruneopts = "UT"
-  revision = "aa6f288c256ff8baf8a7745546a9752323dc0d89"
-  version = "v4.11.0"
+  revision = "f9a30199e7083bdda8adad3a4fa2ec42d25c1fdb"
+  version = "v4.12.0"
 
 [[projects]]
   digest = "1:78d374b493e747afa9fbb2119687e3740a7fb8d0ebabddfef0a012593aaecbb3"
@@ -303,6 +315,7 @@
     "github.com/magefile/mage/mg",
     "github.com/magefile/mage/sh",
     "github.com/mholt/archiver",
+    "github.com/mysteriumnetwork/go-ci/git",
     "github.com/shurcooL/vfsgen",
     "gopkg.in/src-d/go-git.v4",
     "gopkg.in/src-d/go-git.v4/config",
