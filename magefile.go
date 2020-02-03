@@ -56,7 +56,7 @@ func CI() error {
 	git := mgit.NewCommiter(gitToken)
 	err := git.Checkout(&mgit.CheckoutOptions{Force: true})
 	if err != nil {
-		return err
+		return fmt.Errorf("could not perform a checkout: %w", err)
 	}
 
 	defer command.Cleanup()
@@ -69,15 +69,15 @@ func CI() error {
 
 	hash, err := git.Commit(fmt.Sprintf("updating assets_vfsdata.go for %v", tagVersion), "assets_vfsdata.go")
 	if err != nil {
-		return err
+		return fmt.Errorf("could not commit updated assets: %w", err)
 	}
 	err = git.Tag(tagVersion, hash)
 	if err != nil {
-		return err
+		return fmt.Errorf("could not tag %q: %w", tagVersion, err)
 	}
 	err = git.Push(&mgit.PushOptions{Remote: "origin"})
 	if err != nil {
-		return err
+		return fmt.Errorf("could not push to origin: %w", err)
 	}
 	return nil
 }
