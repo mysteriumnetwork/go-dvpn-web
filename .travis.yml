@@ -3,6 +3,8 @@ language: go
 go: ["1.13"]
 env:
   - GIT_TAG_VERSION=
+git:
+  depth: false
 
 stages:
   - name: deploy
