@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-package command
+package ci
 
 import (
 	"encoding/json"
@@ -27,9 +27,22 @@ import (
 	"os"
 	"time"
 
+	"github.com/magefile/mage/mg"
 	"github.com/magefile/mage/sh"
 	"github.com/mholt/archiver/v3"
 )
+
+// Generate re-generates the assets_vfsdata.go
+func Generate() error {
+	defer Cleanup()
+	mg.SerialDeps(
+		DownloadLatestAssets,
+		ExtractAssets,
+		FixDirectory,
+		GoGenerate,
+	)
+	return nil
+}
 
 const assetName = "dist.tar.gz"
 const tempDir = "temp"
@@ -158,7 +171,7 @@ func downloadFile(filepath string, url string) error {
 }
 
 // Generate generates an updated assets_vfsdata.go file
-func Generate() error {
+func GoGenerate() error {
 	return sh.RunV("go", "generate")
 }
 

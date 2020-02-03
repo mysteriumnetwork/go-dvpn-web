@@ -1,5 +1,7 @@
+// +build ignore
+
 /*
- * Copyright (C) 2019 The "MysteriumNetwork/go-dvpn-web" Authors.
+ * Copyright (C) 2019 The "MysteriumNetwork/node" Authors.
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,4 +25,7 @@ import (
 	"github.com/magefile/mage/mage"
 )
 
+// Zero install option.
+// Usage example:
+//   go run mage.go test
 func main() { os.Exit(mage.Main()) }
