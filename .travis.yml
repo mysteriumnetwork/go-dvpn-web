@@ -13,4 +13,4 @@ jobs:
     - stage: deploy
       name: "generate and commit"
       script:
-        - go run ci/main.go ci
+        - go run mage.go ci
