@@ -45,7 +45,12 @@ func CI() error {
 	}
 
 	defer Cleanup()
-	mg.SerialDeps(Generate)
+	mg.SerialDeps(
+		DownloadLatestAssets,
+		ExtractAssets,
+		FixDirectory,
+		GoGenerate,
+	)
 
 	hash, err := git.Commit(fmt.Sprintf("updating assets_vfsdata.go for %v", tagVersion), "assets_vfsdata.go")
 	if err != nil {
