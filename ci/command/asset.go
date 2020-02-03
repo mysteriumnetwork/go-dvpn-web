@@ -28,7 +28,7 @@ import (
 	"time"
 
 	"github.com/magefile/mage/sh"
-	"github.com/mholt/archiver"
+	"github.com/mholt/archiver/v3"
 )
 
 const assetName = "dist.tar.gz"

@@ -1,6 +1,6 @@
 dist: xenial
 language: go
-go: ["1.12"]
+go: ["1.13"]
 env:
   - GIT_TAG_VERSION=
 
@@ -11,9 +11,6 @@ stages:
 jobs:
   include:
     - stage: deploy
-      install:
-        - curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
-        - dep ensure -v
       name: "generate and commit"
       script:
         - go run ci/main.go ci
