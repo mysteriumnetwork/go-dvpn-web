@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/magefile/mage/mg"
 	mgit "github.com/mysteriumnetwork/go-ci/git"
@@ -39,7 +40,10 @@ func CI() error {
 	}
 
 	git := mgit.NewCommiter(gitToken)
-	err := git.Checkout(&mgit.CheckoutOptions{Force: true})
+	err := git.Checkout(&mgit.CheckoutOptions{
+		BranchName: "master",
+		Force:      true,
+	})
 	if err != nil {
 		return fmt.Errorf("could not perform a checkout: %w", err)
 	}
@@ -52,17 +56,26 @@ func CI() error {
 		GoGenerate,
 	)
 
-	hash, err := git.Commit(fmt.Sprintf("updating assets_vfsdata.go for %v", tagVersion), "assets_vfsdata.go")
+	goTag := goTag(tagVersion)
+
+	hash, err := git.Commit(fmt.Sprintf("updating assets_vfsdata.go for %v", goTag), "assets_vfsdata.go")
 	if err != nil {
 		return fmt.Errorf("could not commit updated assets: %w", err)
 	}
-	err = git.Tag(tagVersion, hash)
+	err = git.Tag(goTag, hash)
 	if err != nil {
-		return fmt.Errorf("could not tag %q: %w", tagVersion, err)
+		return fmt.Errorf("could not tag %q: %w", goTag, err)
 	}
 	err = git.Push(&mgit.PushOptions{Remote: "origin"})
 	if err != nil {
 		return fmt.Errorf("could not push to origin: %w", err)
 	}
 	return nil
+}
+
+func goTag(tag string) string {
+	if strings.HasPrefix(tag, "v") {
+		return tag
+	}
+	return "v" + tag
 }
