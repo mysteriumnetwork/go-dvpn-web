@@ -1,0 +1,12 @@
+stages:
+  - deploy
+
+variables:
+  GOFLAGS: "-count=1" # Supersedes GOCACHE=off, see: https://github.com/golang/go/issues/29378#issuecomment-449383809
+
+build:
+  stage: deploy
+  image: golang:1.13
+  only: [tags]
+  tags: [go]
+  script: go run mage.go ci
