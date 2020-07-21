@@ -10,4 +10,5 @@ build:
   tags: [go]
   script:
     - git fetch origin --prune +refs/heads/*:refs/heads/*
+    - git remote set-url origin https://github.com/mysteriumnetwork/go-dvpn-web.git
     - go run mage.go -v ci
