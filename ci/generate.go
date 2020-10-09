@@ -32,6 +32,42 @@ import (
 	"github.com/mholt/archiver/v3"
 )
 
+const localDvpnWebPath = "DVPN_WEB_LOCAL_PATH"
+const assetName = "dist.tar.gz"
+const tempDir = "temp"
+const assetDir = "assets"
+
+// GenerateLocal hello world
+func GenerateLocal() error {
+	if os.Getenv(localDvpnWebPath) == "" {
+		return errors.New("please set " + localDvpnWebPath + " environment variable")
+	}
+
+	defer Cleanup()
+	mg.SerialDeps(
+		CopyLocalAssets,
+		ExtractAssets,
+		FixDirectory,
+		GoGenerate,
+	)
+	return nil
+}
+
+func CopyLocalAssets() error {
+	pathToDist := os.Getenv(localDvpnWebPath) + "/" + assetName
+	fmt.Println("Copying assets from: " + pathToDist)
+	out, err := os.Create(assetName)
+	if err != nil {
+		return err
+	}
+	defer out.Close()
+
+	open, _ := os.Open(pathToDist)
+	_, err = io.Copy(out, open)
+	defer open.Close()
+	return err
+}
+
 // Generate re-generates the assets_vfsdata.go
 func Generate() error {
 	defer Cleanup()
@@ -43,10 +79,6 @@ func Generate() error {
 	)
 	return nil
 }
-
-const assetName = "dist.tar.gz"
-const tempDir = "temp"
-const assetDir = "assets"
 
 // DownloadLatestAssets fetches the latest assets from github
 func DownloadLatestAssets() error {
