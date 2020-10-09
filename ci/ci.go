@@ -36,7 +36,7 @@ func CI() error {
 
 	tagVersion := os.Getenv("GIT_TAG_VERSION")
 	if tagVersion == "" {
-		return errors.New("please specify the TAG_VERSION environment variable")
+		return errors.New("please specify the GIT_TAG_VERSION environment variable")
 	}
 
 	git := mgit.NewCommiter(gitToken)
