@@ -25,11 +25,11 @@ To bundle webUI locally:
 3) Bundle dist
 
     ```console
-    mage GenerateLocal
+   $ mage GenerateLocal
    ```
    or
    ```console
-   go run  mage.go GenerateLocal
+   $ go run mage.go GenerateLocal
    ```
    
 4) In node source root replace module
