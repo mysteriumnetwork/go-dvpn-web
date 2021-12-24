@@ -21,6 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	dvpnweb "github.com/mysteriumnetwork/go-dvpn-web"
 	"io"
 	"io/ioutil"
 	"net/http"
@@ -34,6 +35,7 @@ import (
 
 const distAssetName = "dist.tar.gz"
 const compatibilityAssetName = "compatibility.json"
+const versionAssetName = "version.json"
 const tempDir = "temp"
 const assetDir = "assets"
 
@@ -45,6 +47,7 @@ func Generate() error {
 		ExtractAssets,
 		FixDirectory,
 		GoGenerate,
+		GenerateNodeUIVersionManifest,
 	)
 	return nil
 }
@@ -90,7 +93,7 @@ func DownloadAssets() error {
 
 	fmt.Println("looking for assets")
 	if len(rr.Assets) == 0 {
-		return errors.New("no assets in latest release")
+		return errors.New(fmt.Sprintf("no assets in release: %s", tagVersion))
 	}
 
 	if err := findAndDownloadAsset(rr, distAssetName, true); err != nil {
@@ -154,6 +157,25 @@ func FixDirectory() error {
 		return err
 	}
 	fmt.Println("directory renamed")
+	return nil
+}
+
+func GenerateNodeUIVersionManifest() error {
+	tagVersion := os.Getenv("GIT_TAG_VERSION")
+	if tagVersion == "" {
+		return errors.New("please specify the GIT_TAG_VERSION environment variable")
+	}
+
+	jsonBytes, err := json.Marshal(dvpnweb.UIVersion{Version: tagVersion})
+	if err != nil {
+		return fmt.Errorf("could not marshal version: %w", err)
+	}
+
+	err = ioutil.WriteFile(versionAssetName, jsonBytes, 0644)
+	if err != nil {
+		return fmt.Errorf("could write to "+versionAssetName+": %w", err)
+	}
+
 	return nil
 }
 
