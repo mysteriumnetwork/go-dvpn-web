@@ -112,7 +112,7 @@ func findAndDownloadAsset(rr ReleasesResponse, assetName string, required bool) 
 	}
 
 	if found < 0 && !required {
-		fmt.Println(fmt.Sprintf("asset: %s - not found, but is not required - skipping", assetDir))
+		fmt.Println(fmt.Sprintf("asset: %s - not found, but is not required - skipping", assetName))
 		return nil
 	}
 
