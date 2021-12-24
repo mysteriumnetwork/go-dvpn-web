@@ -82,12 +82,17 @@ func Generate() error {
 
 // DownloadLatestAssets fetches the latest assets from github
 func DownloadLatestAssets() error {
-	fmt.Println("getting latest release")
+	tagVersion := os.Getenv("GIT_TAG_VERSION")
+	if tagVersion == "" {
+		return errors.New("please specify the GIT_TAG_VERSION environment variable")
+	}
+
+	fmt.Println(fmt.Sprintf("getting dvpn-web release: %s", tagVersion))
 
 	client := &http.Client{
 		Timeout: time.Minute,
 	}
-	req, err := http.NewRequest("GET", "https://api.github.com/repos/mysteriumnetwork/dvpn-web/releases/latest", nil)
+	req, err := http.NewRequest("GET", "https://api.github.com/repos/mysteriumnetwork/dvpn-web/releases/tags/"+tagVersion, nil)
 	if err != nil {
 		return err
 	}
