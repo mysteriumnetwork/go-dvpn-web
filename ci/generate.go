@@ -32,47 +32,16 @@ import (
 	"github.com/mholt/archiver/v3"
 )
 
-const localDvpnWebPath = "DVPN_WEB_LOCAL_PATH"
-const assetName = "dist.tar.gz"
+const distAssetName = "dist.tar.gz"
+const compatibilityAssetName = "compatibility.json"
 const tempDir = "temp"
 const assetDir = "assets"
-
-// GenerateLocal hello world
-func GenerateLocal() error {
-	if os.Getenv(localDvpnWebPath) == "" {
-		return errors.New("please set " + localDvpnWebPath + " environment variable")
-	}
-
-	defer Cleanup()
-	mg.SerialDeps(
-		CopyLocalAssets,
-		ExtractAssets,
-		FixDirectory,
-		GoGenerate,
-	)
-	return nil
-}
-
-func CopyLocalAssets() error {
-	pathToDist := os.Getenv(localDvpnWebPath) + "/" + assetName
-	fmt.Println("Copying assets from: " + pathToDist)
-	out, err := os.Create(assetName)
-	if err != nil {
-		return err
-	}
-	defer out.Close()
-
-	open, _ := os.Open(pathToDist)
-	_, err = io.Copy(out, open)
-	defer open.Close()
-	return err
-}
 
 // Generate re-generates the assets_vfsdata.go
 func Generate() error {
 	defer Cleanup()
 	mg.SerialDeps(
-		DownloadLatestAssets,
+		DownloadAssets,
 		ExtractAssets,
 		FixDirectory,
 		GoGenerate,
@@ -80,14 +49,19 @@ func Generate() error {
 	return nil
 }
 
-// DownloadLatestAssets fetches the latest assets from github
-func DownloadLatestAssets() error {
-	fmt.Println("getting latest release")
+// DownloadAssets fetches the latest assets from github
+func DownloadAssets() error {
+	tagVersion := os.Getenv("GIT_TAG_VERSION")
+	if tagVersion == "" {
+		return errors.New("please specify the GIT_TAG_VERSION environment variable")
+	}
+
+	fmt.Println(fmt.Sprintf("getting dvpn-web release: %s", tagVersion))
 
 	client := &http.Client{
 		Timeout: time.Minute,
 	}
-	req, err := http.NewRequest("GET", "https://api.github.com/repos/mysteriumnetwork/dvpn-web/releases/latest", nil)
+	req, err := http.NewRequest("GET", "https://api.github.com/repos/mysteriumnetwork/dvpn-web/releases/tags/"+tagVersion, nil)
 	if err != nil {
 		return err
 	}
@@ -119,6 +93,17 @@ func DownloadLatestAssets() error {
 		return errors.New("no assets in latest release")
 	}
 
+	if err := findAndDownloadAsset(rr, distAssetName, true); err != nil {
+		return err
+	}
+	if err := findAndDownloadAsset(rr, compatibilityAssetName, false); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func findAndDownloadAsset(rr ReleasesResponse, assetName string, required bool) error {
 	found := -1
 	for i, v := range rr.Assets {
 		if v.Name == assetName {
@@ -126,13 +111,17 @@ func DownloadLatestAssets() error {
 		}
 	}
 
+	if found < 0 && !required {
+		fmt.Println(fmt.Sprintf("asset: %s - not found, but is not required - skipping", assetDir))
+		return nil
+	}
+
 	if found < 0 {
 		return fmt.Errorf("no %q found in assets of release", assetName)
 	}
 
 	fmt.Println("downloading file", rr.Assets[found].BrowserDownloadURL)
-	err = downloadFile(assetName, rr.Assets[found].BrowserDownloadURL)
-	if err != nil {
+	if err := downloadFile(assetName, rr.Assets[found].BrowserDownloadURL); err != nil {
 		return err
 	}
 
@@ -148,12 +137,12 @@ func ExtractAssets() error {
 			MkdirAll:          true,
 		},
 	}
-	fmt.Println("extracting archive", assetName)
-	err := z.Unarchive(assetName, tempDir)
+	fmt.Println("extracting archive", distAssetName)
+	err := z.Unarchive(distAssetName, tempDir)
 	if err != nil {
 		return err
 	}
-	fmt.Println("archive", assetName, "extracted")
+	fmt.Println("archive", distAssetName, "extracted")
 	return nil
 }
 
@@ -172,7 +161,7 @@ func FixDirectory() error {
 func Cleanup() error {
 	fmt.Println("cleaning up...")
 	toClean := []string{
-		tempDir, assetDir, assetName,
+		tempDir, assetDir, distAssetName,
 	}
 
 	for _, v := range toClean {
