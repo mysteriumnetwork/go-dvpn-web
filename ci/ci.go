@@ -54,11 +54,12 @@ func CI() error {
 		ExtractAssets,
 		FixDirectory,
 		GoGenerate,
+		GenerateNodeUIVersionManifest,
 	)
 
 	goTag := goTag(tagVersion)
 
-	hash, err := git.Commit(fmt.Sprintf("Update assets for %v", goTag), "assets_vfsdata.go", "compatibility.json")
+	hash, err := git.Commit(fmt.Sprintf("Update assets for %v", goTag), "assets_vfsdata.go", compatibilityAssetName, versionAssetName)
 	if err != nil {
 		return fmt.Errorf("could not commit updated assets: %w", err)
 	}
