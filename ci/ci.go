@@ -50,7 +50,7 @@ func CI() error {
 
 	defer Cleanup()
 	mg.SerialDeps(
-		DownloadLatestAssets,
+		DownloadAssets,
 		ExtractAssets,
 		FixDirectory,
 		GoGenerate,
