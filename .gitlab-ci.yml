@@ -6,7 +6,7 @@ variables:
 
 build:
   stage: deploy
-  image: golang:1.13
+  image: golang:1.17.5
   tags: [go]
   script:
     - git fetch origin --prune +refs/heads/*:refs/heads/*
