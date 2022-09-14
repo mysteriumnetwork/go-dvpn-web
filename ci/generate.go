@@ -21,7 +21,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	dvpnweb "github.com/mysteriumnetwork/go-dvpn-web"
+	dvpnweb "github.com/mysteriumnetwork/go-dvpn-web/v2"
 	"io"
 	"io/ioutil"
 	"net/http"

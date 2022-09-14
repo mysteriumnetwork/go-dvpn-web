@@ -1,3 +1,4 @@
+//go:build mage
 // +build mage
 
 /*
@@ -21,5 +22,5 @@ package main
 
 import (
 	// mage:import
-	_ "github.com/mysteriumnetwork/go-dvpn-web/ci"
+	_ "github.com/mysteriumnetwork/go-dvpn-web/v2/ci"
 )
