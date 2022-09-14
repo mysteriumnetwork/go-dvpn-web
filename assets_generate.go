@@ -1,3 +1,4 @@
+//go:build ignore
 // +build ignore
 
 /*
@@ -22,7 +23,7 @@ package main
 import (
 	"log"
 
-	dvpnweb "github.com/mysteriumnetwork/go-dvpn-web"
+	dvpnweb "github.com/mysteriumnetwork/go-dvpn-web/v2"
 	"github.com/shurcooL/vfsgen"
 )
 
