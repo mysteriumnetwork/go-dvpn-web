@@ -23,4 +23,5 @@ jobs:
       - name: 'Publish'
         env:
           GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
+          GIT_TAG_VERSION: ${{ github.event.inputs.version }}
         run: go run mage.go -v ci
