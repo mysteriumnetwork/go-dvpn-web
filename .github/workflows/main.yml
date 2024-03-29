@@ -21,7 +21,4 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: 'Publish'
-        run: |
-#          git fetch origin --prune +refs/heads/*:refs/heads/*
-#          git remote set-url origin https://github.com/mysteriumnetwork/go-dvpn-web.git
-          go run mage.go -v ci
+        run: go run mage.go -v ci
