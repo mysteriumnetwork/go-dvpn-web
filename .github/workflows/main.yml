@@ -21,4 +21,6 @@ jobs:
       - uses: actions/checkout@v4
 
       - name: 'Publish'
+        env:
+          GIT_TOKEN: ${{ secrets.GIT_TOKEN }}
         run: go run mage.go -v ci
