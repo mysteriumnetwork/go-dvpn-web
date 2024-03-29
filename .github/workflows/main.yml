@@ -1,0 +1,25 @@
+name: Main
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version of dvpn-web'
+        required: true
+
+
+jobs:
+  publish:
+    name: 'Publishing go-dvpn-web ${{ github.event.inputs.version }}'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 'Setup Go'
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.17.5'
+
+      - name: 'Publish'
+        run: |
+          git fetch origin --prune +refs/heads/*:refs/heads/*
+          git remote set-url origin https://github.com/mysteriumnetwork/go-dvpn-web.git
+          go run mage.go -v ci
