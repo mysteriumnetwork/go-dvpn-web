@@ -18,6 +18,8 @@ jobs:
         with:
           go-version: '1.17.5'
 
+      - uses: actions/checkout@v4
+
       - name: 'Publish'
         run: |
           git fetch origin --prune +refs/heads/*:refs/heads/*
