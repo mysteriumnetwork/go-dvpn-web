@@ -1,4 +1,4 @@
-module github.com/mysteriumnetwork/go-dvpn-web/v2
+module github.com/mysteriumnetwork/go-dvpn-web/v3
 
 go 1.17
 
