@@ -23,7 +23,7 @@ package main
 import (
 	"log"
 
-	dvpnweb "github.com/mysteriumnetwork/go-dvpn-web/v2"
+	dvpnweb "github.com/mysteriumnetwork/go-dvpn-web/v3"
 	"github.com/shurcooL/vfsgen"
 )
 

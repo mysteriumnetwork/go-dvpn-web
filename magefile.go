@@ -22,5 +22,5 @@ package main
 
 import (
 	// mage:import
-	_ "github.com/mysteriumnetwork/go-dvpn-web/v2/ci"
+	_ "github.com/mysteriumnetwork/go-dvpn-web/v3/ci"
 )

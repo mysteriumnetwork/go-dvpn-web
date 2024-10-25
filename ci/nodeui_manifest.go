@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	dvpnweb "github.com/mysteriumnetwork/go-dvpn-web/v2"
+	dvpnweb "github.com/mysteriumnetwork/go-dvpn-web/v3"
 	"io/ioutil"
 	"os"
 )
